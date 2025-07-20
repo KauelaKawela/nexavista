@@ -37,15 +37,15 @@ def int_kontrol():
       try:
            requests.get("https://www.google.com",timeout=3)
       except requests.ConnectionError:
-           print(f"{kırmızı}İnternet bağlantısı yok! Lütfen bağlantınızı kontrol edin.{reset}")
-           return False
+           print(f"{menekse}║\n║\n╚════════════╝ {kırmızı}İnternet bağlantısı yok! Lütfen bağlantınızı kontrol edin.{reset}")
+           exit()
 
 def load_hata_code():
       try:
            with open("hata_codes.json","r",encoding="utf-8") as hc:
                 return json.load(hc)
       except FileNotFoundError:
-           print(f"'hata_codes.json' {kırmızı}hata kodu dosyası bulunamadı!{reset}")
+           print(f"{menekse}║\n║\n╚════════════╝{reset} 'hata_codes.json' {kırmızı}hata kodu dosyası bulunamadı!{reset}")
            exit()
 
 def load_categori(file_categori):
@@ -54,7 +54,7 @@ def load_categori(file_categori):
                 categories = [line.strip() for line in fc if line.strip()] 
            return categories
        except FileNotFoundError:
-            print(f"'{file_categori}'{kırmızı} kategori dosyası bulunamadı!{reset}")
+            print(f"{menekse}║\n║\n╚════════════╝{reset} '{file_categori}'{kırmızı} kategori dosyası bulunamadı!{reset}")
             exit()
 
 def load_keywords(keys):
@@ -62,7 +62,7 @@ def load_keywords(keys):
            with open(keys,"r",encoding="utf-8") as ky:
                return json.load(ky)
        except FileNotFoundError:
-           print(f"'{keys}' {kırmızı}dosyası bulunamadı!{reset}")
+           print(f"{menekse}║\n║\n╚════════════╝{reset} '{keys}' {kırmızı}dosyası bulunamadı!{reset}")
            exit()
 
 def classify(link, keywords):
@@ -125,7 +125,7 @@ def kategorize_et():
                 print(f"[{kategori}] >>> {link} ({durum})")
             else:
                 print(f"[{kategori}] >>> {link}")
-      input(f"Menüye dönmek için herhangi bir tuşa basın")
+      input(f"{menekse}║\n║\n╚════════════╝Menüye dönmek için herhangi bir tuşa basın")
       main()
       
 def extract_links(file_links):
@@ -135,7 +135,7 @@ def extract_links(file_links):
                     for line in fl
                     if (match := re.search(r"(https?://[^\s)>\]]+)", line))]
     except FileNotFoundError:
-        print(f"{menekse}║\n{morumsu_mavi}║\n{mavi_menekse}╚════════════╝ {file_links}' {kırmızı}link dosyası bulunamadı!{reset}")
+        print(f"{menekse}║\n║\n╚════════════╝ {file_links}' {kırmızı}link dosyası bulunamadı!{reset}")
         exit()
         
 def gecersiz_links():
@@ -174,6 +174,14 @@ def baslık_cek():
 def kategori_elementleri():
     klasor = "output"
     kategoriler = {}
+    if not os.path.isdir(klasor):
+        print(f"{neon_mor}║\n║\n{mor_gecis}╚════════════╝ {kırmızı}Kategori dosyası bulunamadı..{reset} ")
+        input(f"{menekse}║\n╚══════ > Menüye dönmek için tuşlayın.. {reset}")
+        main()
+    if not os.listdir(klasor):
+        print(f"{neon_mor}║\n║\n{mor_gecis}╚════════════╝ {kırmızı}Kategori dosyası boş..{reset}")
+        input(f"{menekse}║\n╚══════ > Menüye dönmek için tuşlayın.. {reset}")
+        main()
     for dosya in os.listdir(klasor):
         if dosya.endswith(".txt"):
             kategori = dosya.replace(".txt", "")
@@ -185,7 +193,9 @@ def kategori_elementleri():
             except Exception as e:
                 print(f"Hata: {yol} okunamadı -> {e}")
     for kategori, kelimeler in kategoriler.items():
-        print(f"{menekse}{kategori.upper():<20}{reset} ➜ {len(kelimeler)} link")
+          print(f"{menekse}╠═ {kategori.upper():<20}{reset} ➜ {len(kelimeler)} link")
+          input(f"{morumsu_mavi}║\n╚══════ > Menüye dönmek için tuşlayın.. {reset}")
+          main()
 
 def yardım():
       print(f"{neon_mor}╠═════════════════ Yardım Menüsü ═════════════════╗")
@@ -196,11 +206,11 @@ def yardım():
       print(f"{morumsu_mavi}║ 5 - Bu yardım menüsünü gösterir")
       print(f"{mavi_menekse}║ 0 - Uygulamadan çıkış yapar")
       print(f"{acik_mavi}╠═════════════════════════════════════════════════╝ ")
-      input(f"{canli_mavi}║\n╚══════ > Menüye dönmek için tuşlayın.. ")
+      input(f"{canli_mavi}║\n╚══════ > Menüye dönmek için tuşlayın.. {reset}")
       main()
       
 def cıkıs():
-     print("Çıkış yapılıyor..")
+     print(f"{neon_mor}║\n║\n{mor_gecis}╚════════════╝ {kırmızı}Çıkış yapılıyor..{reset}")
      exit()
      
 def MENU(secilmis):
@@ -237,9 +247,9 @@ def main():
       except KeyboardInterrupt:
            print(f"{neon_mor}║\n║\n{mor_gecis}╚════════════╝ {kırmızı}İşlem sonlandırıldı{reset}")
       except AttributeError:
-           print(f"{neon_mor}║\n║\n{mor_gecis}╚════════════╝ {kırmızı}Hatalı girdi türü! Geçerli bir değer girin{reset}")
+           print(f"{neon_mor}║\n║\n{mor_gecis}╚═══════════╝ {kırmızı}Hatalı girdi türü! Geçerli bir değer girin{reset}")
       except TypeError:
-           print(f"{neon_mor}║\n║\n{mor_gecis}╚════════════╝ {kırmızı}Hatalı girdi türü! Geçerli bir değer girin{reset}")
+           print(f"{neon_mor}║\n║\n{mor_gecis}╚═══════════╝ {kırmızı}Hatalı girdi türü! Geçerli bir değer girin{reset}")
       except Exception as e:
            print(f"{neon_mor}║\n║\n{mor_gecis}╚════════════╝ {kırmızı}Hata: {e}{reset}")
 if __name__ == "__main__":
