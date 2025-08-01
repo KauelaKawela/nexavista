@@ -1,52 +1,53 @@
-import requests,os,json,re,time
+import requests,os,json,re,time,sys
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 
 def temiz():
       os.system("cls" if os.name == "nt" else "clear")
 
-reset = "\033[0m"
-kırmızı = "\033[38;5;196m"
-mavi          = "\033[38;5;27m"
-canli_mavi    = "\033[38;5;33m"
-acik_mavi     = "\033[38;5;39m"
-mavi_menekse  = "\033[38;5;69m"
-morumsu_mavi  = "\033[38;5;99m"
-menekse       = "\033[38;5;129m"
-parlak_mor    = "\033[38;5;135m"
-mor_gecis     = "\033[38;5;165m"
-neon_mor      = "\033[38;5;201m"
-neon_mavi = "\033[38;5;44m"
-yesil = "\033[38;5;118m"
+r = "\033[0m"
+k = "\033[38;5;196m"
+m = "\033[38;5;27m"
+cm = "\033[38;5;33m"
+am = "\033[38;5;39m"
+mam = "\033[38;5;69m"
+mom = "\033[38;5;99m"
+mn = "\033[38;5;129m"
+pm = "\033[38;5;135m"
+mg = "\033[38;5;165m"
+nm = "\033[38;5;201m"
+nem = "\033[38;5;44m"
+y = "\033[38;5;118m"
+s = "\033[38;5;226m"
 
 HTTP_HATA_MESAJLARI = {}
 
 def banner():
-      print(f"\n{acik_mavi}                                    Fast"+mavi)
-      print(r"  _   _             __      ___     _   "+mor_gecis+"Scan"+mavi)
-      print(r" | \ | |            \ \    / (_)   | |      "+acik_mavi+"Fast"+mavi)
-      print(r" |  \| | _____  ____ \ \  / / _ ___| |_ __ _    "+mor_gecis+"Sort"+mavi)
+      print(f"\n{am}                                    Fast"+m)
+      print(r"  _   _             __      ___     _   "+mg+"Scan"+m)
+      print(r" | \ | |            \ \    / (_)   | |      "+am+"Fast"+m)
+      print(r" |  \| | _____  ____ \ \  / / _ ___| |_ __ _    "+mg+"Sort"+m)
       print(r" | . ` |/ _ \ \/ / _` \ \/ / | / __| __/ _` |  ")
       print(r" | |\  |  __/>  < (_| |\  /  | \__ \ || (_| |")
       print(r" |_| \_|\___/_/\_\__,_| \/   |_|___/\__\__,_|")
       print("")
-      print("\033[38;5;165m        NexaVista - v1.0 ")
-      print("            Created by: github.com/KauelaKawela"+reset)
+      print(f"{mg}        NexaVista - v1.0 ")
+      print("            Created by: github.com/KauelaKawela"+r)
 
 def int_kontrol():
       try:
            requests.get("https://www.google.com",timeout=3)
       except requests.ConnectionError:
-           print(f"{menekse}║\n║\n╚════════════╝ {kırmızı}İnternet bağlantısı yok! Lütfen bağlantınızı kontrol edin.{reset}")
-           exit()
-
+           print(f"{mn}║\n║\n╚════════════╝ {k}İnternet bağlantısı yok! Lütfen bağlantınızı kontrol edin.{r}")
+           sys.exit()
+                    
 def load_hata_code():
       try:
            with open("hata_codes.json","r",encoding="utf-8") as hc:
                 return json.load(hc)
       except FileNotFoundError:
-           print(f"{menekse}║\n║\n╚════════════╝{reset} 'hata_codes.json' {kırmızı}hata kodu dosyası bulunamadı!{reset}")
-           exit()
+           print(f"{mn}║\n║\n╚════════════╝{r} 'hata_codes.json' {k}hata kodu dosyası bulunamadı!{r}")
+           sys.exit()
 
 def load_categori(file_categori):
        try:
@@ -54,16 +55,16 @@ def load_categori(file_categori):
                 categories = [line.strip() for line in fc if line.strip()] 
            return categories
        except FileNotFoundError:
-            print(f"{menekse}║\n║\n╚════════════╝{reset} '{file_categori}'{kırmızı} kategori dosyası bulunamadı!{reset}")
-            exit()
+            print(f"{mn}║\n║\n╚════════════╝{r} '{file_categori}'{k} kategori dosyası bulunamadı!{r}")
+            sys.exit()
 
 def load_keywords(keys):
        try:
            with open(keys,"r",encoding="utf-8") as ky:
                return json.load(ky)
        except FileNotFoundError:
-           print(f"{menekse}║\n║\n╚════════════╝{reset} '{keys}' {kırmızı}dosyası bulunamadı!{reset}")
-           exit()
+           print(f"{mn}║\n║\n╚════════════╝{r} '{keys}' {k}dosyası bulunamadı!{r}")
+           sys.exit()
 
 def classify(link, keywords):
        for kategori, kelimeler in keywords.items():
@@ -75,21 +76,51 @@ def classify(link, keywords):
 def output_folder():
        if not os.path.exists("output"):
            os.makedirs("output")
-
-def write_link_to_file(link, kategori,uzantı,durum):
+           
+def uzantı_sec():
+      try:
+            uzantılar = {1:"txt",2:"json",3:"csv",4:"xml",5:"html"}
+            print(f"\n{k} 1- [{r}txt{k}]\t2- [{r}json{k}]\t3- [{r}csv{k}]\t4- [{r}xml{k}]\n\n 5- [{r}html{k}]\t6- [{r}???{k}]\t7- [{r}???{k}]\t8- [{r}???{k}]\n")
+            usecim = int(input(f"{mom}╠ > Dosya uzantısı seçiniz: {r}"))
+            if usecim in uzantılar:
+                return uzantılar[usecim]
+            else:
+                raise ValueError()
+      except ValueError:
+            print(f"{nm}║\n║\n{mg}╚════════════╝ {k}Hatalı seçim! Geçerli uzantı giriniz {r}")
+            sys.exit()
+            
+def formatla(link, uzantı, durum=None):
+    if uzantı.lower().strip() == "json":
+        return {"link": link, "durum": durum}
+    elif uzantı.lower().strip() == "csv":
+        return f"{link},{durum if durum else ''}"
+    elif uzantı.lower().strip() == "html":
+        return f"<a href='{link}'>{link}</a> ({durum if durum else ''})</li>"
+    elif uzantı.lower().strip() == "xml":
+        return f"<link><url>{link}</url><durum>{durum}</durum></link>"
+    elif uzantı.lower().strip() == "txt":
+        return f"{link} ({durum})" if durum else f"{link}"
+    else:
+        print(f"{nm}║\n║\n{mg}╚═══════════╝ {k}Hatalı seçim türü! Geçerli uzantı girin{r}")
+        sys.exit()
+        
+def wltf(link, kategori, uzantı, durum=None):
     try:
         if not link.startswith("http://") and not link.startswith("https://"):
-           link = "https://" + link
+            link = "https://" + link
         kategori = re.sub(r'[^\w\-_.]', '_', kategori)
         filename = f"output/{kategori}.{uzantı.lstrip('.')}"
-        with open(filename,"a",encoding="utf-8") as wf:
-            if durum:
-                wf.write(f"{link} ({durum}) \n")
+        formatted = formatla(link, uzantı, durum)
+        with open(filename, "a", encoding="utf-8") as wf:
+            if uzantı == "json":
+                json.dump(formatted, wf, ensure_ascii=False)
+                wf.write("\n")
             else:
-                wf.write(f"{link} \n")
+                wf.write(f"{formatted}\n")
     except Exception as e:
-        print(f"'{kategori}' {kırmızı}kategorisine ait link dosyaya yazılamadı: {reset}{e}")
-
+        print(f"'{kategori}' {k}kategorisine ait link dosyaya yazılamadı: {r}{e}")
+        
 def url_status_cek(url):
     if not url.startswith("http://") and not url.startswith("https://"):
         url = "https://" + url
@@ -102,62 +133,67 @@ def url_status_cek(url):
         else:
             return HTTP_HATA_MESAJLARI.get(str(kod), f"Hata kodu: {kod}")
     except requests.exceptions.RequestException as e:
-        return f"{kırmızı}Hata:{reset} {e}"
+        return f"{k}Hata:{r} {e}"
         
 def kategorize_et():
-      print(rf"""{neon_mor}╠═════════════════════════════════════╗
-{mor_gecis}║       Linkleri Kategorize Et        ║
-{neon_mor}╠═════════════════════════════════════╣""")
-      link_file = input(f"{parlak_mor}╠═══════ > Link dosya yolu: {reset}")
+      print(rf"""{nm}╠═════════════════════════════════════╗
+{mg}║       Linkleri Kategorize Et        ║
+{nm}╠═════════════════════════════════════╣""")
+      link_file = input(f"{pm}╠═══════ > Link dosya yolu: {r}")
       if not os.path.exists(link_file):
-          print(f"{menekse}║\n{morumsu_mavi}║\n{mavi_menekse}╚════════════╝ '{link_file}' {kırmızı}link dosyası bulunamadı{reset}")
-          exit()
-      uzantı = input(f"{menekse}╠ >$ Dosya uzantısı giriniz: {reset}")
+          print(f"{mn}║\n{mom}║\n{mam}╚════════════╝ '{link_file}' {k}link dosyası bulunamadı{r}")
+          sys.exit()
+      uzantı = uzantı_sec()
       int_kontrol()
-      output_folder()
       keywords = load_keywords("keywords.json")
       links = extract_links(link_file)
       for link in links:
             durum = url_status_cek(link)
             kategori = classify(link, keywords)
-            write_link_to_file(link, kategori,uzantı,durum)
+            wltf(link, kategori,uzantı,durum)
             if durum:
-                print(f"[{kategori}] >>> {link} ({durum})")
+                print(f"{k}[{r}{kategori}{k}]{r} >>> {link} >>> {durum}\n----")
             else:
-                print(f"[{kategori}] >>> {link}")
-      input(f"{menekse}║\n║\n╚════════════╝Menüye dönmek için herhangi bir tuşa basın")
+                print(f"{k}[{r}{kategori}{k}]{r} >>> {link}\n----")
+      input(f"{mn}║\n║\n╚════════════╝Menüye dönmek için herhangi bir tuşa basın")
       main()
       
 def extract_links(file_links):
     try:
         with open(file_links, "r", encoding="utf-8") as fl:
-            return [match.group(1).strip()
-                    for line in fl
-                    if (match := re.search(r"(https?://[^\s)>\]]+)", line))]
+            return [
+                match.group(1).strip()
+                for line in fl
+                if (match := re.search(r"(https?://[^\s\"')><]*[^\s\"')><.,;])", line))
+            ]
     except FileNotFoundError:
-        print(f"{menekse}║\n║\n╚════════════╝ {file_links}' {kırmızı}link dosyası bulunamadı!{reset}")
-        exit()
+        print(f"{mn}║\n║\n╚════════════╝ '{file_links}' {k}link dosyası bulunamadı!{r}")
+        sys.exit()
         
 def gecersiz_links():
-      print(rf"""{neon_mor}╠═════════════════════════════════════╗
-{mor_gecis}║      Geçersiz Linkleri Listele      ║
-{neon_mor}╠═════════════════════════════════════╣""")
-      link_file = input(f"{parlak_mor}╠═══════ > Link dosya yolu: {reset}")
+      print(rf"""{nm}╠═════════════════════════════════════╗
+{mg}║      Geçersiz Linkleri Listele      ║
+{nm}╠═════════════════════════════════════╣""")
+      link_file = input(f"{pm}╠═══════ > Link dosya yolu: {r}")
       if not os.path.exists(link_file):
-          print(f"{menekse}║\n{morumsu_mavi}║\n{mavi_menekse}╚════════════╝ '{link_file}' {kırmızı}link dosyası bulunamadı!{reset}")
-          exit()
-      uzantı = input(f"{menekse}╠ >$ Dosya uzantısı giriniz:{reset} ")
+          print(f"{mn}║\n{mom}║\n{mam}╚════════════╝ '{link_file}' {k}link dosyası bulunamadı!{r}")
+          sys.exit()
+      uzantı = uzantı_sec()
       int_kontrol()
       links = extract_links(link_file)
-      output_folder()
-      gecersiz_path = f"output/gecersiz_links.{uzantı.lstrip(".")}"
+      gecersiz_path = f"output/gecersiz_links.{uzantı}"
       with open(gecersiz_path, "a", encoding="utf-8") as outfile:
              for link in links:
                   durum = url_status_cek(link)
                   if durum:
-                      print(f"{link} ({durum})")
-                      outfile.write(f"{link} ({durum})\n")
-      print(f"\n{yesil}Geçersiz linkler '{gecersiz_path}' dosyasına kaydedildi{reset}")
+                      formatted = formatla(link,uzantı,durum)
+                      print(f"{k}[{r}{link}{k}]{r} >>> {durum}\n----")
+                      if uzantı == "json":
+                          json.dump(formatted,outfile,ensure_ascii=False)
+                          outfile.write("\n")
+                      else:
+                          outfile.write(f"{formatted}\n")
+      print(f"\n{y}Geçersiz linkler '{gecersiz_path}' dosyasına kaydedildi{r}")
 
 def baslik_getir(url):
     try:
@@ -168,50 +204,70 @@ def baslik_getir(url):
         return f"(hata: {e})"
               
 def baslık_cek():
-      print("Henüz geliştirilmektedir")
-      exit()
+      print(rf"""{nm}╠═════════════════════════════════════╗
+{mg}║       Linklerden Başlık Çek        ║
+{nm}╠═════════════════════════════════════╣""")
+      link_file = input(f"{pm}╠═══════ > Link dosya yolu: {r}")
+      if not os.path.exists(link_file):
+          print(f"{mn}║\n{mom}║\n{mam}╚════════════╝ '{link_file}' {k}link dosyası bulunamadı{r}")
+          sys.exit()
+      uzantı = uzantı_sec()
+      int_kontrol()
+      title_yolu = f"output/titles.{uzantı}"
+      links = extract_links(link_file)
+      with open(title_yolu,"a",encoding="utf-8") as cıktı_file:
+           for link in links:
+                 baslık = baslik_getir(link)
+                 formatted = formatla(link,uzantı,baslık)
+                 print(f"{k}[{r}{link}{k}]{r} >>> {baslık}\n----")
+                 if uzantı == "json":
+                     json.dump(formatted,cıktı_file,ensure_ascii=False)
+                     cıktı_file.write("\n")
+                 else:
+                     cıktı_file.write(f"{formatted}\n")
 
 def kategori_elementleri():
     klasor = "output"
     kategoriler = {}
+    uzantılar = (".txt", ".json", ".csv", ".xml", ".html")
     if not os.path.isdir(klasor):
-        print(f"{neon_mor}║\n║\n{mor_gecis}╚════════════╝ {kırmızı}Kategori dosyası bulunamadı..{reset} ")
-        input(f"{menekse}║\n╚══════ > Menüye dönmek için tuşlayın.. {reset}")
+        print(f"{nm}║\n║\n{mg}╠════════════╝ {k}Kategori klasörü bulunamadı!{r}")
+        input(f"{mn}║\n╚══════ > Menüye dönmek için bir tuşa basın.. {r}")
         main()
-    if not os.listdir(klasor):
-        print(f"{neon_mor}║\n║\n{mor_gecis}╚════════════╝ {kırmızı}Kategori dosyası boş..{reset}")
-        input(f"{menekse}║\n╚══════ > Menüye dönmek için tuşlayın.. {reset}")
+    dosyalar = [dosya for dosya in os.listdir(klasor) if dosya.endswith(uzantılar)]
+    if not dosyalar:
+        print(f"{nm}║\n║\n{mg}╠════════════╝ {k}Kategori klasörü boş!{r}")
+        input(f"{mn}║\n╚══════ > Menüye dönmek için bir tuşa basın.. {r}")
         main()
-    for dosya in os.listdir(klasor):
-        if dosya.endswith(".txt"):
-            kategori = dosya.replace(".txt", "")
-            yol = os.path.join(klasor, dosya)
-            try:
-                with open(yol, "r", encoding="utf-8") as f:
-                    kelimeler = [satir.strip() for satir in f if satir.strip()]
-                    kategoriler[kategori] = kelimeler
-            except Exception as e:
-                print(f"Hata: {yol} okunamadı -> {e}")
+    for dosya in dosyalar:
+        kategori = os.path.splitext(dosya)[0]
+        yol = os.path.join(klasor, dosya)
+        try:
+            with open(yol, "r", encoding="utf-8") as f:
+                kelimeler = [satir.strip() for satir in f if satir.strip()]
+                kategoriler[kategori] = kelimeler
+        except Exception as e:
+            print(f"{k}Hata: {dosya} okunamadı -> {e}{r}")
     for kategori, kelimeler in kategoriler.items():
-          print(f"{menekse}╠═ {kategori.upper():<20}{reset} ➜ {len(kelimeler)} link")
-          input(f"{morumsu_mavi}║\n╚══════ > Menüye dönmek için tuşlayın.. {reset}")
-          main()
-
+        print(f"{mn}╠═ {kategori.upper():<20}{r} ➜ {m}{len(kelimeler)} link{r}")
+    input(f"{mom}║\n╚══════ > Menüye dönmek için bir tuşa basın.. {r}")
+    main()
+    
 def yardım():
-      print(f"{neon_mor}╠═════════════════ Yardım Menüsü ═════════════════╗")
-      print(f"{neon_mor}║ 1 - Linkleri anahtar kelimelere göre kategorilere ayırır")
-      print(f"{mor_gecis}║ 2 - Ulaşılamayan linkleri kontrol eder ve listeler ")
-      print(f"{parlak_mor}║ 3 - Linklerden <title> başlığını çeker")
-      print(f"{menekse}║ 4 - Her kategoride kaç link olduğunu gösterir")
-      print(f"{morumsu_mavi}║ 5 - Bu yardım menüsünü gösterir")
-      print(f"{mavi_menekse}║ 0 - Uygulamadan çıkış yapar")
-      print(f"{acik_mavi}╠═════════════════════════════════════════════════╝ ")
-      input(f"{canli_mavi}║\n╚══════ > Menüye dönmek için tuşlayın.. {reset}")
+      print(f"{nm}╠═════════════════ Yardım Menüsü ═════════════════╗")
+      print(f"{nm}║ 1 - Linkleri anahtar kelimelere göre kategorilere ayırır")
+      print(f"{mg}║ 2 - Ulaşılamayan linkleri kontrol eder ve listeler ")
+      print(f"{pm}║ 3 - Linklerden <title> başlığını çeker")
+      print(f"{mn}║ 4 - Her kategoride kaç link olduğunu gösterir")
+      print(f"{mom}║ 5 - Bu yardım menüsünü gösterir")
+      print(f"{mam}║ 0 - Uygulamadan çıkış yapar")
+      print(f"{am}╠═════════════════════════════════════════════════╝ ")
+      input(f"{cm}║\n╚══════ > Menüye dönmek için tuşlayın.. {r}")
       main()
       
 def cıkıs():
-     print(f"{neon_mor}║\n║\n{mor_gecis}╚════════════╝ {kırmızı}Çıkış yapılıyor..{reset}")
-     exit()
+     print(f"{nm}║\n║\n{mg}╚════════════╝ {k}Çıkış yapılıyor..{r}")
+     sys.exit()
      
 def MENU(secilmis):
       secim_haritası = {
@@ -222,7 +278,11 @@ def MENU(secilmis):
       "4": kategori_elementleri,
       "5": yardım
       }
-      secim_haritası.get(secilmis,f"{kırmızı}Hatalı girdi! İşlem sonlandırılıyor{reset}")()
+      func = secim_haritası.get(secilmis)
+      if func:
+          func()
+      else:
+          print(f"{nm}║\n║\n{mg}╚═══════════╝ {k}Hatalı girdi türü! Geçerli bir değer girin{r}")
       
 def main():
       output_folder()
@@ -231,26 +291,26 @@ def main():
       temiz()
       banner()
       try:
-          menu = input(f"""{mavi}╔═════════════════════════════════════╗
-{mavi}║          NexaVista - Menü           ║
-{canli_mavi}╠═════════════════════════════════════╣
-{acik_mavi}║ 1 - Linkleri Kategorize Et          ║
-{mavi_menekse}║ 2 - Geçersiz Linkleri Listele       ║
-{morumsu_mavi}║ 3 - Linklerden Başlık Çek           ║
-{menekse}║ 4 - Kategori Sayılarını Göster      ║
-{parlak_mor}║ 5 - Hakkında / Yardım               ║
-{mor_gecis}║ 0 - Çıkış                           ║
-{neon_mor}║
-{neon_mor}║
-{neon_mor}╠═══════╝ $ {reset}""")
+          menu = input(f"""{m}╔═════════════════════════════════════╗
+{m}║          NexaVista - Menü           ║
+{cm}╠═════════════════════════════════════╣
+{am}║ 1 - Linkleri Kategorize Et          ║
+{mam}║ 2 - Geçersiz Linkleri Listele       ║
+{mom}║ 3 - Linklerden Başlık Çek           ║
+{mn}║ 4 - Kategori Sayılarını Göster      ║
+{pm}║ 5 - Hakkında / Yardım               ║
+{mg}║ 0 - Çıkış                           ║
+{nm}║
+{nm}║
+{nm}╠═══════╝ $ {r}""")
           MENU(menu)
       except KeyboardInterrupt:
-           print(f"{neon_mor}║\n║\n{mor_gecis}╚════════════╝ {kırmızı}İşlem sonlandırıldı{reset}")
+           print(f"{nm}║\n║\n{mg}╚════════════╝ {k}İşlem sonlandırıldı{r}")
       except AttributeError:
-           print(f"{neon_mor}║\n║\n{mor_gecis}╚═══════════╝ {kırmızı}Hatalı girdi türü! Geçerli bir değer girin{reset}")
+           print(f"{nm}║\n║\n{mg}╚═══════════╝ {k}Hatalı girdi türü! Geçerli bir değer girin{r}")
       except TypeError:
-           print(f"{neon_mor}║\n║\n{mor_gecis}╚═══════════╝ {kırmızı}Hatalı girdi türü! Geçerli bir değer girin{reset}")
+           print(f"{nm}║\n║\n{mg}╚═══════════╝ {k}Hatalı girdi türü! Geçerli bir değer girin{r}")
       except Exception as e:
-           print(f"{neon_mor}║\n║\n{mor_gecis}╚════════════╝ {kırmızı}Hata: {e}{reset}")
+           print(f"{nm}║\n║\n{mg}╚════════════╝ {k}Hata: {e}{r}")
 if __name__ == "__main__":
    main()
