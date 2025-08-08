@@ -1,6 +1,7 @@
 import requests,os,json,re,time,sys
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
+from datetime import datetime
 
 def temiz():
       os.system("cls" if os.name == "nt" else "clear")
@@ -96,7 +97,7 @@ def formatla(link, uzantı, durum=None):
     elif uzantı.lower().strip() == "csv":
         return f"{link},{durum if durum else ''}"
     elif uzantı.lower().strip() == "html":
-        return f"<a href='{link}'>{link}</a> ({durum if durum else ''})</li>"
+        return f"<li><a href='{link}'>{link}</a> ({durum if durum else ''})</li>"
     elif uzantı.lower().strip() == "xml":
         return f"<link><url>{link}</url><durum>{durum}</durum></link>"
     elif uzantı.lower().strip() == "txt":
@@ -110,7 +111,7 @@ def wltf(link, kategori, uzantı, durum=None):
         if not link.startswith("http://") and not link.startswith("https://"):
             link = "https://" + link
         kategori = re.sub(r'[^\w\-_.]', '_', kategori)
-        filename = f"output/{kategori}.{uzantı.lstrip('.')}"
+        filename = f"output/{kategori}_{timestep}.{uzantı.lstrip('.')}"
         formatted = formatla(link, uzantı, durum)
         with open(filename, "a", encoding="utf-8") as wf:
             if uzantı == "json":
@@ -125,15 +126,24 @@ def url_status_cek(url):
     if not url.startswith("http://") and not url.startswith("https://"):
         url = "https://" + url
     try:
-        response = requests.head(url, timeout=5,allow_redirects=True)
+        response = requests.head(url, timeout=5, allow_redirects=True)
         kod = response.status_code
         time.sleep(0.2)
         if 200 <= kod < 300:
             return ""
         else:
             return HTTP_HATA_MESAJLARI.get(str(kod), f"Hata kodu: {kod}")
+    except requests.exceptions.ConnectionError as e:
+        if "NameResolutionError" in str(e) or "[Errno -2]" in str(e) or "[Errno 7]" in str(e):
+            return "000 - Alan adı çözümlenemedi (DNS Hatası)"
+        else:
+            return "001 - Sunucuya bağlantı sağlanamadı"
+    except requests.exceptions.Timeout:
+        return "002 - Zaman aşımı (timeout)"
+    except requests.exceptions.MissingSchema:
+        return "003 - Geçersiz URL formatı"
     except requests.exceptions.RequestException as e:
-        return f"{k}Hata:{r} {e}"
+        return f"004 - Beklenmeyen hata: {e}"
         
 def kategorize_et():
       print(rf"""{nm}╠═════════════════════════════════════╗
@@ -157,7 +167,7 @@ def kategorize_et():
                 print(f"{k}[{r}{kategori}{k}]{r} >>> {link}\n----")
       input(f"{mn}║\n║\n╚════════════╝Menüye dönmek için herhangi bir tuşa basın")
       main()
-      
+          
 def extract_links(file_links):
     try:
         with open(file_links, "r", encoding="utf-8") as fl:
@@ -240,16 +250,20 @@ def kategori_elementleri():
         input(f"{mn}║\n╚══════ > Menüye dönmek için bir tuşa basın.. {r}")
         main()
     for dosya in dosyalar:
-        kategori = os.path.splitext(dosya)[0]
+        kategori = "_".join(os.path.splitext(dosya)[0].split("_")[:-2])
+        if not kategori:  # Eğer tarih formatı yoksa tam ismi al
+            kategori = os.path.splitext(dosya)[0]
         yol = os.path.join(klasor, dosya)
         try:
             with open(yol, "r", encoding="utf-8") as f:
-                kelimeler = [satir.strip() for satir in f if satir.strip()]
-                kategoriler[kategori] = kelimeler
+                satirlar = [satir.strip() for satir in f if satir.strip()]
+                if kategori not in kategoriler:
+                    kategoriler[kategori] = 0
+                kategoriler[kategori] += len(satirlar)
         except Exception as e:
             print(f"{k}Hata: {dosya} okunamadı -> {e}{r}")
-    for kategori, kelimeler in kategoriler.items():
-        print(f"{mn}╠═ {kategori.upper():<20}{r} ➜ {m}{len(kelimeler)} link{r}")
+    for kategori, sayi in kategoriler.items():
+        print(f"{mn}╠═ {kategori.upper():<20}{r} ➜ {m}{sayi} link{r}")
     input(f"{mom}║\n╚══════ > Menüye dönmek için bir tuşa basın.. {r}")
     main()
     
@@ -286,8 +300,9 @@ def MENU(secilmis):
       
 def main():
       output_folder()
-      global HTTP_HATA_MESAJLARI
+      global HTTP_HATA_MESAJLARI, timestep
       HTTP_HATA_MESAJLARI = load_hata_code()
+      timestep = datetime.now().strftime("%Y%m%d_%H%M%S")
       temiz()
       banner()
       try:
