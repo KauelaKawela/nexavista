@@ -18,11 +18,11 @@
   pip install requests beautifulsoup4
 
 ## Kullanım
-
+```bash
 git clone https://github.com/KauelaKawela/nexavista
 cd nexavista
 python3 nexavista.py
-
+```
 
 
 # 🌐 NexaVista
@@ -45,7 +45,8 @@ python3 nexavista.py
   pip install requests beautifulsoup4
 
 ## Installation
-
+```bash
 git clone https://github.com/KauelaKawela/nexavista
 cd nexavista
 python3 nexavista.py
+```
