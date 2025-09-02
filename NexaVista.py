@@ -2,10 +2,16 @@ import requests,os,json,re,time,sys
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 from datetime import datetime
+import csf
 
 def temiz():
-      os.system("cls" if os.name == "nt" else "clear")
-
+    if os.name == "nt":
+         os.system("cls")
+         print("\033[H\033[J", end="")
+    else:
+         os.system("clear")
+         print("\033[H\033[J", end="")
+        
 r = "\033[0m"
 k = "\033[38;5;196m"
 m = "\033[38;5;27m"
@@ -66,13 +72,6 @@ def load_keywords(keys):
        except FileNotFoundError:
            print(f"{mn}║\n║\n╚════════════╝{r} '{keys}' {k}dosyası bulunamadı!{r}")
            sys.exit()
-
-def classify(link, keywords):
-       for kategori, kelimeler in keywords.items():
-             for kelime in kelimeler:
-                   if kelime.lower() in link.lower():
-                       return kategori
-       return "Bilinmiyor"
 
 def output_folder():
        if not os.path.exists("output"):
@@ -159,7 +158,7 @@ def kategorize_et():
       links = extract_links(link_file)
       for link in links:
             durum = url_status_cek(link)
-            kategori = classify(link, keywords)
+            kategori = csf.classify(link, keywords)
             wltf(link, kategori,uzantı,durum)
             if durum:
                 print(f"{k}[{r}{kategori}{k}]{r} >>> {link} >>> {durum}\n----")
