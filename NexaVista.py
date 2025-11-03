@@ -5,6 +5,7 @@ from datetime import datetime
 from datas.func import csf,formated,urlstus,docat,helper_func
 from datas.func import check_tittle as ctl
 from datas.func import notfoundlinks as nfl
+from os import system
 
 def banner():
       print(f"\n{clr.am}                                    Fast"+clr.m)
@@ -89,7 +90,7 @@ def main():
       global HTTP_HATA_MESAJLARI, timestep
       HTTP_HATA_MESAJLARI = helper_func.load_hata_code()
       timestep = datetime.now().strftime("%Y%m%d_%H%M%S")
-      helper_func.temiz()
+      system("clear||cls")
       banner()
       try:
           menu = input(f"""{clr.m}╔═════════════════════════════════════╗
