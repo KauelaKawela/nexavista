@@ -1,13 +1,6 @@
 import traceback,os,requests,json
 from datetime import datetime
 
-def temiz():
-    if os.name == "nt":
-         os.system("cls")
-    else:
-         os.system("clear")
-         print("\033[2J\033[H", end="")
-
 def output_folder():
        if not os.path.exists("output"):
            os.makedirs("output")
